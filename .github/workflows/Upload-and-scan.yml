@@ -39,7 +39,58 @@ jobs:
         with:
           name: CodePackage
           path: '**/*.war' # Wildcards can be used to filter the files copied into the container. See: https://github.com/actions/upload-artifact
-
+     
+      # You may pin to the exact commit or the version.
+      # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
+      - uses: veracode/veracode-uploadandscan-action@0.2.4
+        with:
+          name: Veracode Upload And Scan
+        # appname
+          appname: VeraDemo # default is ${{ github.repository }}
+        # createprofile
+          createprofile: true # default is true
+        # filepath
+          filepath: app/target/verademo.war 
+        # version
+          version: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }} # default is Scan from Github job: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+        # vid
+          vid: ${{ secrets.VERACODE_API_ID }}
+        # vkey
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+        # true or false
+          createsandbox: true # optional
+        # name of the sandbox
+          sandboxname: Daily # optional
+        # wait X minutes for the scan to complete
+          scantimeout: 60 # optional
+        # modules to exclude from module selection
+#        exclude: # optional
+        # modules to include in module selection
+#        include: # optional
+        # business criticality - policy selection
+          criticality: Very High # optional
+        # filename pattern
+   #       pattern: # optional
+        # replacement
+    #    replacement: # optional
+        # specify to scan in a sandbox
+    #    sandboxid: # optional
+        # All top level modules
+    #    scanallnonfataltoplevelmodules: # optional
+        # platform selected modules
+    #    selected: # optional
+        # selected modules like from previous scan
+    #    selectedpreviously: # optional
+        # teams
+    #    teams: # optional
+        # teams
+    #    toplevel: # optional
+        # automatically delete the current scan if there are any errors when uploading files or starting the scan
+    #    deleteincompletescan: # optional
+        # specify version of the Java API Wrapper; default is latest
+    #    javawrapperversion: # optional
+        # show detailed diagnostic information, which you can use for debugging, in the output.
+    #    debug: # optional
       - uses: veracode/veracode-uploadandscan-action@master # Run the uploadandscan action. Inputs are described above.
         with:
           appname: '${{ secrets.VERACODE_APP_NAME }}'
@@ -48,3 +99,4 @@ jobs:
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           scantimeout: 60
           createprofile: true
+
