@@ -34,7 +34,7 @@ jobs:
 
       - name: List files in the repository
         run: |
-          ls -al ${{ github.workspace }}
+          ls -al '${{ github.workspace }}'
       - uses: actions/upload-artifact@v2 # Copy files from repository to docker container so the next uploadandscan action can access them.
         with:
           name: CodePackage
@@ -43,9 +43,9 @@ jobs:
       - uses: veracode/veracode-uploadandscan-action@master # Run the uploadandscan action. Inputs are described above.
         with:
           #appname: '${{ secrets.VERACODE_APP_NAME }}'
-          appname: '${{github.repository}}'
+          appname: '${{ github.repository }}'
           filepath: app/target/verademo.war
-          vid: ${{ secrets.VERACODE_API_ID }}'
+          vid: '${{ secrets.VERACODE_API_ID }}'
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           scantimeout: 60
           #createprofile: false
@@ -67,20 +67,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: List Directory looking for scaResults.json
-        run: |
-          ls -lshart app; ls -lshart .; ls -lharts /tmp; ls -lharts ${HOME};
+ #     - name: List Directory looking for scaResults.json
+       # run: |
+  #        ls -lshart app; ls -lshart .; ls -lharts /tmp; ls -lharts ${HOME};
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
         #uses: veracode/veracode-sca@v1.0.8
         run: | 
            curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ./app/ --quick --json=scaResults.json
-           SRCCLR_API_TOKEN="${{secrets.SRCCLR_API_TOKEN}}" 
-      - uses: actions/upload-artifact@v1
-        with:
-          name: SCAResults
-          path: scaresults.json
+           SRCCLR_API_TOKEN: '${{ secrets.SRCCLR_API_TOKEN }}'
+      #- uses: actions/upload-artifact@v1
+       # with:
+      #    name: SCAResults
+       #   path: scaresults.json
         #with:
         #  github_token: ${{ secrets.GITHUB_TOKEN }}
         #  quick: true
@@ -133,4 +133,4 @@ jobs:
         uses: buzzcode/veracode-flaws-to-issues@v1
         with:
           scan-results-json: '/tmp/policy_flaws.json'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
