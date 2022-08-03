@@ -68,7 +68,7 @@ jobs:
         # modules to include in module selection
 #        include: # optional
         # business criticality - policy selection
-          criticality: Very High # optional
+#          criticality: Very High # optional
         # filename pattern
    #       pattern: # optional
         # replacement
