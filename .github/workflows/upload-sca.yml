@@ -1,0 +1,136 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Upload-Scan-Policy-SCA
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1 # Make java accessible on path so the uploadandscan action can run.
+        with: 
+          java-version: '8'
+
+      - name: Build with Maven
+        run: mvn -B package --file app/pom.xml
+
+      - name: List files in the repository
+        run: |
+          ls -al ${{ github.workspace }}
+      - uses: actions/upload-artifact@v2 # Copy files from repository to docker container so the next uploadandscan action can access them.
+        with:
+          name: CodePackage
+          path: '**/*.war' # Wildcards can be used to filter the files copied into the container. See: https://github.com/actions/upload-artifact
+
+      - uses: veracode/veracode-uploadandscan-action@master # Run the uploadandscan action. Inputs are described above.
+        with:
+          #appname: '${{ secrets.VERACODE_APP_NAME }}'
+          appname: '${{github.repository}}'
+          filepath: app/target/verademo.war
+          vid: ${{ secrets.VERACODE_API_ID }}'
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
+          scantimeout: 60
+          #createprofile: false
+          createprofile: true
+        continue-on-error: true
+
+  #on: 
+  #push:
+  #  paths-ignore:
+  #    - "README.md"
+  #schedule:
+  #  - cron: 15 14 * * 6
+
+  #jobs:
+  veracode-sca-task:
+    runs-on: ubuntu-latest
+    name: Scan repository for Issues
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: List Directory looking for scaResults.json
+        run: |
+          ls -lshart app; ls -lshart .; ls -lharts /tmp; ls -lharts ${HOME};
+      - name: Run Veracode SCA
+        env:
+          SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+        #uses: veracode/veracode-sca@v1.0.8
+        run: | 
+           curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ./app/ --quick --json=scaResults.json
+           SRCCLR_API_TOKEN="${{secrets.SRCCLR_API_TOKEN}}" srcclr scan --json scaresults.json
+      - uses: actions/upload-artifact@v1
+        with:
+          name: SCAResults
+          path: scaresults.json
+        #with:
+        #  github_token: ${{ secrets.GITHUB_TOKEN }}
+        #  quick: true
+        #  create-issues: true 
+        #  fail-on-cvss: 1
+        #  min-cvss-for-issue: 1
+      
+
+# this first step will get existing flaws for an Application Profile (in this case, NodeGoat).  
+# 	(obviously) Change the name=<app_name> in the first http call to be 
+#	the name of your Application on the Veracode platform
+  get-policy-flaws:
+    runs-on: ubuntu-latest
+    container: 
+      image: veracode/api-signing:latest
+    steps:
+      # Note: this will only work up to about 500 flaws
+      #		due to Veracode results limiting
+      # See the get_flaws.sh script in the helpers directory
+      #		for a more elaborate method
+      - name: get policy flaws
+        run: |
+          cd /tmp
+          export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
+          export VERACODE_API_KEY_SECRET=${{ secrets.VERACODE_API_KEY }}
+          guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=Verademo" | jq -r '._embedded.applications[0].guid') 
+          echo GUID: ${guid}
+          total_flaws=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True" | jq -r '.page.total_elements')
+          echo TOTAL_FLAWS: ${total_flaws}
+          http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True&size=${total_flaws}" > policy_flaws.json
+
+      - name: save results file
+        uses: actions/upload-artifact@v2
+        with:
+          name: policy-flaws
+          path: /tmp/policy_flaws.json
+
+# This step will import flaws from the step above
+  import-policy-flaws:
+    needs: get-policy-flaws
+    runs-on: ubuntu-latest
+    steps:
+      - name: get flaw file
+        uses: actions/download-artifact@v2
+        with:
+          name: policy-flaws
+          path: /tmp
+
+      - name: import flaws as issues
+        uses: buzzcode/veracode-flaws-to-issues@v1
+        with:
+          scan-results-json: '/tmp/policy_flaws.json'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
