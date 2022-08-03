@@ -54,9 +54,9 @@ jobs:
         # version
           version: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }} # default is Scan from Github job: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
         # vid
-          vid: ${{ secrets.VERACODE_API_ID }}
+          vid: '${{ secrets.VERACODE_API_ID }}'
         # vkey
-          vkey: ${{ secrets.VERACODE_API_KEY }}
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
         # true or false
           createsandbox: true # optional
         # name of the sandbox
