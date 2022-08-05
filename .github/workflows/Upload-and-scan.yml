@@ -39,8 +39,8 @@ jobs:
         with:
           name: CodePackage
           path: '**/*.war' # Wildcards can be used to filter the files copied into the container. See: https://github.com/actions/upload-artifact
-     
-      # You may pin to the exact commit or the version.
+  
+            # You may pin to the exact commit or the version.
       # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
       - uses: veracode/veracode-uploadandscan-action@0.2.4
         with:
@@ -48,7 +48,7 @@ jobs:
         # appname
           appname: VeraDemo # default is ${{ github.repository }}
         # createprofile
-          createprofile: true # default is true
+          createprofile: false # default is true
         # filepath
           filepath: app/target/verademo.war 
         # version
@@ -60,7 +60,7 @@ jobs:
         # true or false
           createsandbox: true # optional
         # name of the sandbox
-          sandboxname: Daily # optional
+          sandboxname: Daily-${{ github.run_id }}-VeraDemo.war # optional
         # wait X minutes for the scan to complete
           scantimeout: 60 # optional
         # modules to exclude from module selection
@@ -91,6 +91,41 @@ jobs:
     #    javawrapperversion: # optional
         # show detailed diagnostic information, which you can use for debugging, in the output.
     #    debug: # optional
+    
+      - name: Run within Docker
+  # You may pin to the exact commit or the version.
+  # uses: mosteo-actions/docker-run@1e8c2ac951679fbb21485cbb4eed9e39246ad823
+        uses: mosteo-actions/docker-run@v1
+        with:
+          # A dockerhub image
+          image: veracode/api-wrapper-java:latest # optional, default is ubuntu:latest
+          # Command to run inside image
+          command: java -jar api-wrapper-java.jar -action Uploadandscan -filepath /app/target/VeraDemo.war -vid=${{ VERACODE_API_ID }} -vkey=${{ VERACODE_API_KEY }} -appname VeraDemo -version 2.0 # optional, default is ls -al
+      - name: Stop Action Filter
+  # You may pin to the exact commit or the version.
+  # uses: Chocrates/stop-action-filter@2c3e506fe42b836ba9c4e586bc0c1a264c7a6853
+        uses: Chocrates/stop-action-filter@v3
+        with:
+          image: veracode/api-wrapper-java:latest
+          run: java -jar api-wrapper-java.jar -action passfail -vid=${{ VERACODE_API_ID }} -vkey=${{ VERACODE_API_KEY }} -appname "verademo.war" | grep -i "Did not pass" = true
+        if: run == [fail]
+            #jobs: 
+          #cancel: true
+            #name: 'Fail'
+        #runs-on: ubuntu-latest
+         #steps:
+        #uses: styfle/cancel-workflow-action@0.10.0
+         #with:
+        #$all_but_latest: false
+          #access_token: ${{ secret.PRIVATE_TOKEN }}
+# The filter clause that you would like to use to filter your jobs
+  #       FILTER: 
+    # Extra parameters to pass to `docker run`
+       #   params: # optional, default is 
+          # Host dir to map into the container
+     #     host-dir: # optional, default is ${{ github.workspace }}
+          # Guest dir that will overlay host-dir, and be used as working directory
+       #   guest-dir: # optional, default is ${{ github.workspace }}
       #- uses: veracode/veracode-uploadandscan-action@master # Run the uploadandscan action. Inputs are described above.
      #   with:
        #   appname: '${{ secrets.VERACODE_APP_NAME }}'
