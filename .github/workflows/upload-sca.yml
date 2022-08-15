@@ -75,17 +75,17 @@ jobs:
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
         #uses: veracode/veracode-sca@v1.0.8
         run: | 
-           curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ./app --update-advisor 
+           curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ./app --update-advisor --json=SCA_output.json
        #    SRCCLR_API_TOKEN: '${{ secrets.SRCCLR_API_TOKEN }}'
-      #- uses: actions/upload-artifact@v1
-       # with:
-      #    name: SCAResults
-       #   path: scaresults.json
-        #with:
+      - uses: actions/upload-artifact@v1
+        with:
+          name: SCAResults
+          path: SCA_output.json
+          #with:
         #  github_token: ${{ secrets.GITHUB_TOKEN }}
-        #  quick: true
-        #  create-issues: true 
-        #  fail-on-cvss: 1
+       #   quick: true
+      #    create-issues: true 
+     #     fail-on-cvss: 1
         #  min-cvss-for-issue: 1
       
 
