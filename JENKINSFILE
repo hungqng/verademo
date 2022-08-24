@@ -78,7 +78,7 @@ pipeline {
                     withMaven(maven:'maven-3') {
                         script {
                             if(isUnix() == true) {
-                                sh "curl -sSL https://download.sourceclear.com/ci.sh | sh ./app"
+                                sh "curl -sSL https://download.sourceclear.com/ci.sh | sh - scan ./app --allow-dirty --update-advisor"
 
                                 // debug, no upload
                                 //sh "curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh -s -- scan --no-upload"
@@ -119,7 +119,7 @@ pipeline {
                                         unzip pipeline-scan-LATEST.zip pipeline-scan.jar
                                         java -jar pipeline-scan.jar --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file target/verademo.war --fail_on_cwe="79,80,89,114" --fail_on_severity="Very High" || true
+                                            --file app/target/verademo.war --fail_on_cwe="79,80,89,114" --fail_on_severity="Very High" || true
                                         """
                                 }
                                 else {
@@ -128,7 +128,7 @@ pipeline {
                                             Expand-Archive -Path pipeline-scan.zip -DestinationPath veracode_scanner
                                             java -jar veracode_scanner\\pipeline-scan.jar --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file target/verademo.war --fail_on_cwe="79,80,89,114" --fail_on_severity="Very High" || true
+                                            --file app/target/verademo.war --fail_on_cwe="79,80,89,114" --fail_on_severity="Very High" || true
                                             """
                                 }
                             } catch (err) {
