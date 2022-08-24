@@ -38,10 +38,10 @@ pipeline {
                 withMaven(maven:'maven-3') {
                     script {
                         if(isUnix() == true) {
-                            sh 'mvn clean package'
+                            sh 'mvn clean package -f app/pom.xml'
                         }
                         else {
-                            bat 'mvn clean package'
+                            bat 'mvn clean package -f app/pom.xml'
                         }
                     }
                 }
@@ -140,20 +140,20 @@ pipeline {
                   
         // only works on *nix, as we're building a Linux image
         //  uses the natively installed docker
-        stage ('Deploy') {
-            when { expression { return (isUnix() == true) } }
-            steps {
-                echo 'building Docker image'
-                sh 'docker version'
+    //    stage ('Deploy') {
+      //      when { expression { return (isUnix() == true) } }
+      //      steps {
+      //          echo 'building Docker image'
+      //          sh 'docker version'
 
-                ansiColor('xterm') {
-                    sh 'docker build -t verademo:${BUILD_TAG} .'
-                }
+      //          ansiColor('xterm') {
+      //              sh 'docker build -t verademo:${BUILD_TAG} .'
+      //          }
                 
                 // split into separate stage??
-                echo 'Deploying ...'
+      //          echo 'Deploying ...'
         
-            }
-        }
+      //      }
+      //  }
     }
 }
