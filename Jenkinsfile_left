@@ -67,7 +67,7 @@ pipeline {
                                         unzip pipeline-scan-LATEST.zip pipeline-scan.jar
                                         java -jar pipeline-scan.jar --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file app/target/verademo.war -bf results.json
+                                            --file app/target/verademo.war -bf 
                                         """
                                 }
                                 else {
