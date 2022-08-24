@@ -79,6 +79,8 @@ pipeline {
                         }    
                     }
             }
+        }
+
 
         stage ('Veracode scan') {
             steps {
@@ -89,7 +91,7 @@ pipeline {
                     else {
                         env.HOST_OS = 'Windows'
                     }
-                
+                }
 
                 echo 'Veracode scanning'
                 withCredentials([ usernamePassword ( 
@@ -99,6 +101,7 @@ pipeline {
                 }
              }
         }
+    
         
     
 
