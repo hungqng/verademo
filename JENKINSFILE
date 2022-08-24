@@ -78,7 +78,7 @@ pipeline {
                     withMaven(maven:'maven-3') {
                         script {
                             if(isUnix() == true) {
-                                sh "curl -sSL https://download.sourceclear.com/ci.sh | bash -s ./app scan --allow-dirty --update-advisor"
+                                sh "curl -sSL https://download.sourceclear.com/ci.sh | sh - scan ./app   --update-advisor"
 
                                 // debug, no upload
                                 //sh "curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh -s -- scan --no-upload"
@@ -88,7 +88,7 @@ pipeline {
                                             Set-ExecutionPolicy AllSigned -Scope Process -Force
                                             $ProgressPreference = "silentlyContinue"
                                             iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1'))
-                                            srcclr scan ./app scan --allow-dirty --update-advisor
+                                            srcclr scan ./app  --update-advisor
                                             '''
                             }
                         }
