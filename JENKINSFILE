@@ -67,7 +67,7 @@ pipeline {
                                         unzip pipeline-scan-LATEST.zip pipeline-scan.jar
                                         java -jar pipeline-scan.jar --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file target/verademo.war --fail_on_cwe="79,80,89,114" --fail_on_severity="Very High"  -f app/target/verademo.war || true
+                                            --file app/target/verademo.war --fail_on_cwe="70,79,80,89,104,117,113" --fail_on_severity="Very High"
                                         """
                                 }
                                 else {
@@ -76,16 +76,18 @@ pipeline {
                                             Expand-Archive -Path pipeline-scan.zip -DestinationPath veracode_scanner
                                             java -jar veracode_scanner\\pipeline-scan.jar --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file target/verademo.war --fail_on_cwe="79,80,89,114" --fail_on_severity="Very High" -f app/target/verademo.war || true
+                                            --file app/target/verademo.war --fail_on_cwe="70,79,80,89,104,117,113" --fail_on_severity="Very High"
                                             """
                                 }
                             } catch (err) {
                                 echo 'Pipeline err: ' + err
                             }
                         }    
-                    }
+                    } 
+
+                    echo "Pipeline scan done (failures ignored, results avialable in ${WORKSPACE}/results.json)"
             }
-        } 
+        }   
 
         stage ('Veracode scan') {
             steps {
@@ -96,22 +98,19 @@ pipeline {
                     else {
                         env.HOST_OS = 'Windows'
                     }
-                
+                }
 
                 echo 'Veracode scanning'
                 withCredentials([ usernamePassword ( 
                     credentialsId: 'veracode_login', usernameVariable: 'VERACODE_API_ID', passwordVariable: 'VERACODE_API_KEY') ]) {
                         // fire-and-forget 
-                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, fileNamePattern: '', pHost: '', pPassword: '', pUser: '', replacementPattern: '', sandboxName: '', scanExcludesPattern: '', scanIncludesPattern: '', scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadExcludesPattern: '', uploadIncludesPattern: 'target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}", filePath: "{build.buildPath}/verademo.war",
+                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, fileNamePattern: '', pHost: '', pPassword: '', pUser: '', replacementPattern: '', sandboxName: '', scanExcludesPattern: '', scanIncludesPattern: '', scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadExcludesPattern: '', uploadIncludesPattern: 'target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}",filePath: "{build.buildPath}/verademo.war",
 
                         // wait for scan to complete (timeout: x)
-                        //veracode applicationName: '${VERACODE_APP_NAME}'', criticality: 'VeryHigh', debug: true, timeout: 20, fileNamePattern: '', pHost: '', pPassword: '', pUser: '', replacementPattern: '', sandboxName: '', scanExcludesPattern: '', scanIncludesPattern: '', scanName: "${BUILD_TAG}", uploadExcludesPattern: '', uploadIncludesPattern: 'target/verademo.war', vid: '${VERACODE_API_ID}', vkey: '${VERACODE_API_KEY}', filePath: "{build.buildPath}/verademo.war",
-                    
-                }
+                        //veracode applicationName: '${VERACODE_APP_NAME}'', criticality: 'VeryHigh', debug: true, timeout: 20, fileNamePattern: '', pHost: '', pPassword: '', pUser: '', replacementPattern: '', sandboxName: '', scanExcludesPattern: '', scanIncludesPattern: '', scanName: "${BUILD_TAG}", uploadExcludesPattern: '', uploadIncludesPattern: 'target/verademo.war', vid: '${VERACODE_API_ID}', vkey: '${VERACODE_API_KEY}'
+                    }      
             }
         }
-       
-    
 
         stage ('Veracode SCA') {
             steps {
@@ -120,7 +119,7 @@ pipeline {
                     withMaven(maven:'maven-3') {
                         script {
                             if(isUnix() == true) {
-                                sh "curl -sSL https://download.sourceclear.com/ci.sh | sh - ./app --update-advisor"
+                                sh "curl -sSL https://download.sourceclear.com/ci.sh | sh - scan ./app --update-advisor"
 
                                 // debug, no upload
                                 //sh "curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh -s -- scan --no-upload"
@@ -137,7 +136,8 @@ pipeline {
                     }
                 }
             }
-        
         }
+
+      
     }
 }
