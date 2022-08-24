@@ -111,7 +111,7 @@ pipeline {
                     }      
             }
         }
-
+}
         stage ('Veracode SCA') {
             steps {
                 echo 'Veracode SCA'
