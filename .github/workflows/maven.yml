@@ -74,7 +74,7 @@ jobs:
         # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
         #create-issues: # optional, default is false
         # A path within the repository where the build definition starts
-        #path: # optional, default is .
+        path: ./app
         # Run the SRCCLR in debug mode
         #debug: # optional, default is false
         # Run the SRCCLR with the `--skip-collectors` options
