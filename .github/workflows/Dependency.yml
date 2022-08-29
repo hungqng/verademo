@@ -41,6 +41,7 @@ jobs:
       with:
         # Authorization token to query and create issues
         github_token: ${{ secrets.GITACT }}
+        SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
         # 
 #        quick: # optional, default is false
         # Show update advisor
