@@ -1,0 +1,65 @@
+# This workflow will initiate a Veracode Static Analysis Pipeline scan, return a results.json and convert to SARIF for upload as a code scanning alert
+
+name: Veracode Static Analysis Pipeline Scan
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a job to build and submit pipeline scan, you will need to customize the build process accordingly and make sure the artifact you build is used as the file input to the pipeline scan file parameter
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+        
+  # build the application
+    - uses: actions/setup-java@v1 # Make java accessible on path so the uploadandscan action can run.
+      with: 
+        java-version: '8'
+
+    - name: Build with Maven
+      run: mvn -B package --file app/pom.xml
+
+      
+    - name: Archive package
+      uses: actions/upload-artifact@v2
+      with:
+        name: CodePackage
+        path: '**/*.war'
+    - name: Veracode Dependency Scanning
+      # You may pin to the exact commit or the version.
+      # uses: veracode/veracode-sca@d8ce4a08eebf1a6c5e7759c1dc53c1172a3e7e64
+      uses: veracode/veracode-sca@v1.09
+      with:
+        # Authorization token to query and create issues
+        github_token: ${{ secrets.GITACT }}
+        # 
+#        quick: # optional, default is false
+        # Show update advisor
+        update_advisor: true # optional, default is false
+        # A git URL to work with in case the scan is not for the current repository
+#        url: # optional, default is 
+        # The minimum CVSS value for vulnerability to be added as an issue
+#        min-cvss-for-issue: # optional, default is 0
+        # The maximum allowed cvss in found vulnerabilities to pass the step
+#        fail-on-cvss: # optional, default is 10
+        # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
+        create-issues: true # optional, default is false
+        # A path within the repository where the build definition starts
+        path: ./app # optional, default is .
+        # Run the SRCCLR in debug mode
+        #debug: # optional, default is false
+        # Run the SRCCLR with the `--skip-collectors` options
+        #skip-collectors: # optional, default is false
+        # Run the SRCCLR with the `--allow-dirty` option
+        allow-dirty: true # optional, default is false
+        # Run the SRCCLR with the `--recursive` option
+        #recursive: # optional, default is false
