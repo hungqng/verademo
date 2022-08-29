@@ -100,14 +100,14 @@ jobs:
           # A dockerhub image
           image: veracode/api-wrapper-java:latest # optional, default is ubuntu:latest
           # Command to run inside image
-          command: java -jar api-wrapper-java.jar -action Uploadandscan -filepath /app/target/VeraDemo.war -vid=${{ VERACODE_API_ID }} -vkey=${{ VERACODE_API_KEY }} -appname VeraDemo -version 2.0 # optional, default is ls -al
+          command: java -jar api-wrapper-java.jar -action Uploadandscan -filepath /app/target/VeraDemo.war -vid=${{ secrets.VERACODE_API_ID }} -vkey=${{ secrets.VERACODE_API_KEY }} -appname VeraDemo -version 2.0 # optional, default is ls -al
       - name: Stop Action Filter
   # You may pin to the exact commit or the version.
   # uses: Chocrates/stop-action-filter@2c3e506fe42b836ba9c4e586bc0c1a264c7a6853
         uses: Chocrates/stop-action-filter@v3
         with:
           image: veracode/api-wrapper-java:latest
-          run: java -jar api-wrapper-java.jar -action passfail -vid=${{ VERACODE_API_ID }} -vkey=${{ VERACODE_API_KEY }} -appname "verademo.war" | grep -i "Did not pass" = true
+          run: java -jar api-wrapper-java.jar -action passfail -vid=${{ secrets.VERACODE_API_ID }} -vkey=${{ secrets.VERACODE_API_KEY }} -appname "verademo.war" | grep -i "Did not pass" = true
         if: run == [fail]
             #jobs: 
           #cancel: true
