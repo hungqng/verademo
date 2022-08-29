@@ -108,7 +108,7 @@ jobs:
         with:
           image: veracode/api-wrapper-java:latest
           run: java -jar api-wrapper-java.jar -action passfail -vid=${{ secrets.VERACODE_API_ID }} -vkey=${{ secrets.VERACODE_API_KEY }} -appname "verademo.war" | grep -i "Did not pass" = true
-        if: run == [fail]
+       # if: run == [fail]
             #jobs: 
           #cancel: true
             #name: 'Fail'
