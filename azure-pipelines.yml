@@ -5,8 +5,10 @@
 # This is an example of using VeraDemo Java test application with the Veracode Static Pipeline scanner.  A Veracode subscription is required.
 trigger:
 - main
+
 pool:
   vmImage: 'ubuntu-latest'
+
 steps:
 - task: Maven@3
   displayName: Build with Maven
@@ -19,6 +21,23 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+
+- task: Veracode@3
+  inputs:
+    ConnectionDetailsSelection: 'Endpoint'
+    AnalysisService: 'Veracode'
+    veracodeAppProfile: 'Verademo'
+    version: '$(build.buildNumber)'
+    filepath: '$(build.artifactstagingdirectory)'
+    sandboxName: 'Azure DevOps'
+    createProfile: false
+    apiId: '$(VERACODE_API_ID_'
+    apiKey: '$(VERACODE_API_KEY)'
+    failBuildOnPolicyFail: false
+    failBuildIfUploadAndScanBuildStepFails: false
+    importResults: false
+    maximumWaitTime: '360'
+
 - task: Bash@3
   displayName: Veracode Pipeline
   inputs:
@@ -29,3 +48,14 @@ steps:
       java -jar pipeline-scan.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -f /home/vsts/work/1/s/app/target/verademo.war || true
 - publish: $(System.DefaultWorkingDirectory)/results.json
   artifact: VeracodeBaseline
+
+- task: PowerShell@2
+  displayName: Veracode Software Composition Analysis
+  env:
+    SRCCLR_API_TOKEN: $(SRCCLR_API_TOKEN)
+  inputs:
+    targetType: 'inline'
+    script: |
+      Set-ExecutionPolicy AllSigned -Scope Process -Force
+      iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1'))
+      srcclr scan --allow-dirty
