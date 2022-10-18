@@ -1,4 +1,4 @@
-name: Veracode Static Analysis Demo
+name: Veracode Static Analysis
 on: workflow_dispatch
     
 jobs:
