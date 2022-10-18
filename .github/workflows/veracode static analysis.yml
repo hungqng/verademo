@@ -19,8 +19,8 @@ jobs:
           appname: 'Verademo'
           createprofile: false
           filepath: 'app/target/verademo.war'
-          vid: '${{ VERACODE_API_ID }}'
-          vkey: '${{ VERACODE_API_KEY }}'
+          vid: '${{ secrets.VERACODE_API_ID }}'
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
 #          createsandbox: 'true'
           sandboxname: 'GitHub'
           scantimeout: 0
