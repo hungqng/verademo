@@ -1,0 +1,30 @@
+name: Veracode Static Analysis Demo
+on: workflow_dispatch
+    
+jobs:
+  static_analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out main branch
+        uses: actions/checkout@v2
+        
+      - name: Build with Maven
+        run: mvn -B package --file app/pom.xml
+          
+      - name: Veracode Upload And Scan
+        uses: veracode/veracode-uploadandscan-action@0.2.4
+        with:
+          appname: 'Verademo'
+          createprofile: false
+          filepath: 'app/target/verademo.war'
+          vid: '${{ VERACODE_API_ID }}'
+          vkey: '${{ VERACODE.API_KEY }}'
+#          createsandbox: 'true'
+          sandboxname: 'GitHub'
+          scantimeout: 0
+#         debug: true
+#          exclude: '*.js'
+#          include: '*.war'
+#          criticality: 'VeryHigh'
