@@ -1,4 +1,4 @@
-name: Veracode Pipeline Scan Demo
+name: Veracode Pipeline Scan
 on: workflow_dispatch
     
 jobs:
