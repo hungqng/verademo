@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         VERACODE_APP_NAME = 'Verademo'      // App Name in the Veracode Platform
+        VERACODE_SANDBOX_NAME = 'Jenkins'   // Sandbox Name
     }
 
     // this is optional on Linux, if jenkins does not have access to your locally installed docker
@@ -48,7 +49,7 @@ pipeline {
             }
         }
 
-        stage ('Veracode scan') {
+        stage ('Veracode Upload and Scan') {
             steps {
                 script {
                     if(isUnix() == true) {
@@ -59,16 +60,16 @@ pipeline {
                     }
                 }
 
-                echo 'Veracode scanning'
+                echo 'Veracode Upload scanning'
                 withCredentials([ usernamePassword ( 
                     credentialsId: 'veracode_login', usernameVariable: 'VERACODE_API_ID', passwordVariable: 'VERACODE_API_KEY') ]) {
                         // fire-and-forget 
-                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, fileNamePattern: '', pHost: '', pPassword: '', pUser: '', replacementPattern: '', sandboxName: '', scanExcludesPattern: '', scanIncludesPattern: '', scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadExcludesPattern: '', uploadIncludesPattern: 'app/target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}"
+                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, fileNamePattern: '', pHost: '', pPassword: '', pUser: '', replacementPattern: '', sandboxName: "${VERACODE_SANDBOX_NAME}", scanExcludesPattern: '', scanIncludesPattern: '', scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadExcludesPattern: '', uploadIncludesPattern: 'app/target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}"
                     }
             }
         }
 
-        stage ('Pipeline') {
+        stage ('Veracode Pipeline Scanner') {
           steps {
                 echo 'Veracode Pipeline scanning'
                 withCredentials([ usernamePassword ( 
@@ -110,9 +111,9 @@ pipeline {
             }
         }
 
-        stage ('Veracode SCA') {
+        stage ('Veracode Software Compositition Analysis') {
             steps {
-                echo 'Veracode SCA'
+                echo 'Veracode SCA scanning'
                 withCredentials([ string(credentialsId: 'SCA_Token', variable: 'SRCCLR_API_TOKEN')]) {
                     withMaven(maven:'maven-3') {
                         script {
