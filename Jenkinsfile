@@ -87,18 +87,24 @@ pipeline {
                                     sh """
                                         curl -sO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
                                         unzip pipeline-scan-LATEST.zip pipeline-scan.jar
-                                        java -jar pipeline-scan.jar --veracode_api_id '${VERACODE_API_ID}' \
+                                        java -jar pipeline-scan.jar \
+                                            --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file app/target/verademo.war --issue_details true
+                                            --file app/target/verademo.war \
+                                            --issue_details true \
+                                            --json_output_file="result.json"
                                         """
                                 }
                                 else {
                                     powershell """
                                             curl  https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip -o pipeline-scan.zip
                                             Expand-Archive -Path pipeline-scan.zip -DestinationPath veracode_scanner
-                                            java -jar veracode_scanner\\pipeline-scan.jar --veracode_api_id '${VERACODE_API_ID}' \
-                                            --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file app/target/verademo.war --issue_details true
+                                            java -jar veracode_scanner\\pipeline-scan.jar \
+                                                --veracode_api_id '${VERACODE_API_ID}' \
+                                                --veracode_api_key '${VERACODE_API_KEY}' \
+                                                --file app/target/verademo.war \
+                                                --issue_details true \
+                                                --json_output_file="result.json"
                                             """
                                 }
                             } catch (err) {
