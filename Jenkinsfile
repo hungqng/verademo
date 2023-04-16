@@ -112,6 +112,17 @@ pipeline {
                     } 
 
                     echo "Pipeline scan done (failures ignored, results avialable in ${WORKSPACE}/results.json)"
+                post {
+                    always {
+                        archiveArtifacts artifacts: 'results.json', fingerprint: true
+                }
+    }
+            }
+        }
+        stage('Publish Artifact') {
+            steps {
+                // Define steps for publishing artifact here
+                archiveArtifacts artifacts: '${WORKSPACE}/result.json'
             }
         }
 
@@ -139,11 +150,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    post {
-        always {
-            archiveArtifacts artifacts: 'results.json', fingerprint: true
         }
     }
 }
