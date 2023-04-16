@@ -62,7 +62,7 @@ pipeline {
                 }
                 withCredentials([ usernamePassword ( 
                     credentialsId: 'veracode_login', usernameVariable: 'VERACODE_API_ID', passwordVariable: 'VERACODE_API_KEY') ]) {
-                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, fileNamePattern: '', pHost: '', pPassword: '', pUser: '', replacementPattern: '', sandboxName: "${VERACODE_SANDBOX_NAME}", scanExcludesPattern: '', scanIncludesPattern: '', scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadExcludesPattern: '', uploadIncludesPattern: 'app/target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}", deleteIncompleteScan: "1"
+                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadIncludesPattern: 'app/target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}", deleteIncompleteScan: "1"
                     }
             }
         }
@@ -89,8 +89,7 @@ pipeline {
                                             --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
                                             --file app/target/verademo.war \
-                                            --issue_details true \
-                                            --json_output_file="result.json"
+                                            --issue_details true 
                                         """
                                 }
                                 else {
@@ -101,8 +100,7 @@ pipeline {
                                                 --veracode_api_id '${VERACODE_API_ID}' \
                                                 --veracode_api_key '${VERACODE_API_KEY}' \
                                                 --file app/target/verademo.war \
-                                                --issue_details true \
-                                                --json_output_file="result.json"
+                                                --issue_details true 
                                             """
                                 }
                             } catch (err) {
@@ -110,7 +108,6 @@ pipeline {
                             }
                         }    
                     } 
-                echo "Pipeline scan done (failures ignored, results avialable in ${WORKSPACE}/results.json"
             }
         }
         stage ('Veracode Software Compositition Analysis') {
@@ -137,11 +134,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    post {
-        always {
-            archiveArtifacts "${WORKSPACE}/results.json"
         }
     }
 }
