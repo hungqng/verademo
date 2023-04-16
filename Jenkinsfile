@@ -68,7 +68,7 @@ pipeline {
         }
 
         stage ('Veracode Pipeline Scanner') {
-          steps {
+            steps {
                 echo 'Veracode Pipeline scanning'
                 withCredentials([ usernamePassword ( 
                     credentialsId: 'veracode_login', usernameVariable: 'VERACODE_API_ID', passwordVariable: 'VERACODE_API_KEY') ]) {
@@ -110,22 +110,9 @@ pipeline {
                             }
                         }    
                     } 
-
-                    echo "Pipeline scan done (failures ignored, results avialable in ${WORKSPACE}/results.json)"
-                post {
-                    always {
-                        archiveArtifacts artifacts: 'results.json', fingerprint: true
-                }
-    }
+                echo "Pipeline scan done (failures ignored, results avialable in ${WORKSPACE}/results.json)"
             }
         }
-        stage('Publish Artifact') {
-            steps {
-                // Define steps for publishing artifact here
-                archiveArtifacts artifacts: '${WORKSPACE}/result.json'
-            }
-        }
-
         stage ('Veracode Software Compositition Analysis') {
             steps {
                 echo 'Veracode SCA scanning'
