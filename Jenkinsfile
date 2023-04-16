@@ -62,7 +62,7 @@ pipeline {
                 }
                 withCredentials([ usernamePassword ( 
                     credentialsId: 'veracode_login', usernameVariable: 'VERACODE_API_ID', passwordVariable: 'VERACODE_API_KEY') ]) {
-                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadIncludesPattern: 'app/target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}", deleteIncompleteScan: "1"
+                        veracode applicationName: "${VERACODE_APP_NAME}", criticality: 'VeryHigh', debug: true, scanName: "${BUILD_TAG}-${env.HOST_OS}", uploadIncludesPattern: 'app/target/verademo.war', vid: "${VERACODE_API_ID}", vkey: "${VERACODE_API_KEY}", deleteIncompleteScan: 2
                     }
             }
         }
@@ -89,7 +89,9 @@ pipeline {
                                             --veracode_api_id '${VERACODE_API_ID}' \
                                             --veracode_api_key '${VERACODE_API_KEY}' \
                                             --file app/target/verademo.war \
-                                            --issue_details true 
+                                            --issue_details true \
+                                            --json_output true \
+                                            --json_output_file results.json
                                         """
                                 }
                                 else {
@@ -100,7 +102,9 @@ pipeline {
                                                 --veracode_api_id '${VERACODE_API_ID}' \
                                                 --veracode_api_key '${VERACODE_API_KEY}' \
                                                 --file app/target/verademo.war \
-                                                --issue_details true 
+                                                --issue_details true \
+                                                --json_output true \
+                                                --json_output_file results.json
                                             """
                                 }
                             } catch (err) {
