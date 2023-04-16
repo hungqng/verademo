@@ -136,4 +136,10 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            archiveArtifacts artifacts: "*.json", fingerprint: true, allowEmptyArchive: true
+            deleteDir()
+        }
+    }
 }
