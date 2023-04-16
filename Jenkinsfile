@@ -111,11 +111,6 @@ pipeline {
                         }    
                     } 
                 echo "Pipeline scan done (failures ignored, results avialable in ${WORKSPACE}/results.json"
-                post {
-                    always {
-                        archiveArtifacts "${WORKSPACE}/results.json"
-                    }
-                }
             }
         }
         stage ('Veracode Software Compositition Analysis') {
@@ -142,6 +137,11 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts "${WORKSPACE}/results.json"
         }
     }
 }
