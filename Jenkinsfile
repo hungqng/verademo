@@ -142,7 +142,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: "*.json", fingerprint: true, allowEmptyArchive: true
+            archiveArtifacts artifacts: "results.json", fingerprint: true, allowEmptyArchive: true
             deleteDir()
         }
     }
