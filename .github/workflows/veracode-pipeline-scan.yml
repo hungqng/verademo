@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ScanResults
-          path: /github/home/app/target/results.json
+          path: /home/runner/work/verademo/verademo/results.json
