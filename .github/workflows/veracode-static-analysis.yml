@@ -38,3 +38,11 @@ jobs:
 #          exclude: '*.js'
 #          include: '*.war'
 #          criticality: 'VeryHigh'
+
+
+      # Docker version
+      # - name: Veracode Upload and Scan using Docker
+      #   uses: mosteo-actions/docker-run@v1
+      #   with:
+      #     image: veracode/api-wrapper-java:latest
+      #     command: java -jar api-wrapper-java.jar -action Uploadandscan -filepath /app/target/verademo.war -vid=${{ secrets.VERACODE_API_ID }} -vkey=${{ secrets.VERACODE_API_KEY }} -appname Verademo -sandboxname GitHub -version ${{ github.buildNumber }} -deleteincompletescan 2
