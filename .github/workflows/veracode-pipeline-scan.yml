@@ -23,5 +23,5 @@ jobs:
       - name: Upload results.json
         uses: actions/upload-artifact@v2
         with:
-          name: ScanResults
+          name: Scan Results
           path: /home/runner/work/verademo/verademo/results.json
