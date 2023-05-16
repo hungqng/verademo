@@ -19,7 +19,7 @@ steps:
       ./veracode configure
       echo "Scan containers alpine:latest and bitnami/moodle"
       ./veracode scan --source /home/vsts/work/1/s/ --type directory --format json --output ./veracode_container_scan.json
-      
+
 - task: PublishBuildArtifacts@1
   inputs:
     artifactName: 'veracode_container_scan.json'
