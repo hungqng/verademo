@@ -5,10 +5,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: CmdLine@2
+- task: Bash@3
   displayName: Veracode Container CLI
   inputs:
     script: |
+      pwd
       echo "Export credentials from Azure variables"
       export VERACODE_API_KEY_ID=$(VERACODE_API_ID)
       export VERACODE_API_KEY_SECRET=$(VERACODE_API_KEY)
@@ -17,26 +18,10 @@ steps:
       echo "Pull credentials from the exported credentials above"
       ./veracode configure
       echo "Scan containers alpine:latest and bitnami/moodle"
-      ./veracode scan --source alpine:latest --type image --format json --output alpine_latest_scan.json
-      ./veracode scan --source bitnami/moodle --type image --format json --output bitnami_moodle_scan.json
-      echo "Scan repo verademo"
-      ./veracode scan --source https://github.com/veracode/verademo --type repo --format json --output ./veracode_container_scan.json
-      ./veracode sbom --source https://github.com/veracode/verademo --type repo --format json --output ./sbom.json
-
+      ./veracode scan --source /home/vsts/work/1/s/ --type directory --format json --output ./veracode_container_scan.json
+      
 - task: PublishBuildArtifacts@1
   inputs:
-    artifactName: 'alpine_latest_scan.json'
-    pathToPublish: '$(System.DefaultWorkingDirectory)/alpine_latest_scan.json'
-  displayName: 'Publish alpine_latest_scan.json Artifact'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    artifactName: 'bitnami_moodle_scan.json'
-    pathToPublish: '$(System.DefaultWorkingDirectory)/bitnami_moodle_scan.json'
-  displayName: 'Publish bitnami_moodle_scan.json Artifact'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    artifactName: 'sbom.json'
-    pathToPublish: '$(System.DefaultWorkingDirectory)/sbom.json'
-  displayName: 'Publish Veracode sbom.json Artifact'
+    artifactName: 'veracode_container_scan.json'
+    pathToPublish: '$(System.DefaultWorkingDirectory)/veracode_container_scan.json'
+  displayName: 'Publish veracode_container_scan.json Artifact'
