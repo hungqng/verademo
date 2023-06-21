@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 # This is an example of using VeraDemo Java test application with the Veracode Static Pipeline scanner.  A Veracode subscription is required.
 trigger:
-- main
+- manual
 
 pool:
   vmImage: 'ubuntu-latest'
