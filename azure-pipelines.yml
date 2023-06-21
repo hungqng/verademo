@@ -25,14 +25,14 @@ steps:
 - task: Veracode@3
   displayName: Veracode Static Upload Scan
   inputs:
-    ConnectionDetailsSelection: 'Endpoint'
+    ConnectionDetailsSelection: 'Service Connection'
     AnalysisService: 'Veracode'
     veracodeAppProfile: 'Verademo'
     version: '$(build.buildNumber)'
     filepath: '$(build.artifactstagingdirectory)'
     sandboxName: 'Azure DevOps'
     createProfile: false
-    apiId: '$(VERACODE_API_ID)'
+    apiId: '$(VERACODE_API_ID_'
     apiKey: '$(VERACODE_API_KEY)'
     failBuildOnPolicyFail: false
     failBuildIfUploadAndScanBuildStepFails: false
