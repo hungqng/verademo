@@ -20,7 +20,7 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+    goals: 'clean package'
 
 - task: Veracode@3
   displayName: Veracode Static Upload Scan
@@ -57,6 +57,4 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      Set-ExecutionPolicy AllSigned -Scope Process -Force
-      iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1'))
-      srcclr scan --allow-dirty
+      curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ./app
