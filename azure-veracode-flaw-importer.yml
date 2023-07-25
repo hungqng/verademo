@@ -1,0 +1,44 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+# This is an example of using VeraDemoDotNet test application with the Veracode Static Pipeline scanner.  A Veracode subscription is required.
+
+trigger:
+- manual
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+pool:
+  vmImage: 'windows-latest'
+  #vmImage: 'ubuntu-latest'
+
+steps:
+- task: Veracode Flaw Importer@3
+  inputs:
+    # Access with service connection or API credentials
+    ConnectionDetailsSelection: 'Service Connection'
+    # Service connection name
+    AnalysisService: 'Veracode'
+    veracodeAppProfile: 'Verademo'
+    sandboxName: 'Azure DevOps'
+    scanType: 'Dynamic, Static, and Software Composition Analysis'
+    # List of flaw types:
+    # All Flaws, All Unmitigated Flaws, All Flaws Violating Policy, All Unmitigated Flaws Violating Policy
+    importType: 'All Unmitigated Flaws'
+    # List of work item types:
+    # Bug, Issue, Task, Epic, Feature, Test Case
+    workItemType: 'Task'
+    # Path to the area for grouping the work items
+    area: '$(system.teamProject)'
+    # Set true to replace the area path
+    overwriteAreaPathInWorkItemsOnImport: true
+    # Add CWE ID to all work items
+    addCweAsATag: true
+    # Add a tag with the build number that Veracode discovered the flaw
+    foundInBuild: true
+    # Maximum number of flaws to import at the same time
+    flawImportLimit: '1000'
