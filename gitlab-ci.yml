@@ -1,0 +1,62 @@
+variables:
+  OUTPUT_FILE: ".m2/verademo/app/target/verademo.war"
+  BASELINE_FILE: "pipeline_baseline.json"
+  UPDATE_BASELINE_COMMIT_MESSAGE: "Updating baseline on development branch from GitLab [skip ci]"
+  REPOSITORY_NAME: "verademo"
+
+stages:
+  - build
+  - static upload
+  - pipeline
+  - sca
+
+cache:
+    key: "$CI_JOB_NAME"
+    paths:
+        - .m2/verademo
+
+build-app:
+  image: maven:3.8.3-openjdk-17
+  stage: build
+  script: 
+    - mvn clean package -f app/pom.xml
+  artifacts:
+    paths:
+      - app/target/verademo.war
+  allow_failure: true
+
+static-scan:
+  stage: static upload
+  image: veracode/api-wrapper-java:latest
+  script:
+    - echo "Starting Static Scan"
+    - java -jar /opt/veracode/api-wrapper.jar
+      -vid ${VERACODE_API_ID}
+      -vkey ${VERACODE_API_SECRET}
+      -action UploadAndScan
+      -appname "Verademo"
+      -sandboxname "Gitlab"
+      -version $CI_JOB_ID
+      -filepath /builds/hunguyen/verademo/app/target/verademo.war
+      -createprofile false
+  allow_failure: true
+
+pipeline-scan:
+  image: veracode/pipeline-scan:latest
+  stage: pipeline
+  script:
+    - java -jar /opt/veracode/pipeline-scan.jar 
+        -vid $VERACODE_API_ID -vkey $VERACODE_API_SECRET 
+        --file /builds/hunguyen/verademo/app/target/verademo.war
+        --gl_issue_generation true
+        --gl_vulnerability_generation true
+  allow_failure: true
+
+sca-scan:
+  image: maven:3.8.3-openjdk-17
+  variables:
+    SRCCLR_API_TOKEN: ${SRCCLR_API_TOKEN}
+  stage: sca
+  script:
+    - echo "Starting Software Composition Analysis"
+    - curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan ./app
