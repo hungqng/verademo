@@ -52,7 +52,6 @@ steps:
     pwd
   displayName: 'Download Veracode Java API Wrapper'
 
-
 - script: |
     pwd
     java -jar VeracodeJavaAPI.jar -action UploadAndScan -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -deleteincompletescan 1 -createprofile false -appname "Verademo  -version "$(build.buildNumber)" -filepath $(System.DefaultWorkingDirectory)/app/target/verademo.war
