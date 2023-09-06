@@ -32,7 +32,7 @@ steps:
     filepath: '$(System.DefaultWorkingDirectory)/app/target/verademo.war'
     sandboxName: 'Azure DevOps'
     createProfile: false
-    apiId: '$(VERACODE_API_ID_'
+    apiId: '$(VERACODE_API_ID)'
     apiKey: '$(VERACODE_API_KEY)'
     failBuildOnPolicyFail: false
     failBuildIfUploadAndScanBuildStepFails: false
