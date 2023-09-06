@@ -22,23 +22,6 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'clean package'
 
-# - task: Veracode@3
-#   displayName: Veracode Static Upload Scan
-#   inputs:
-#     ConnectionDetailsSelection: 'Service Connection'
-#     AnalysisService: 'Veracode'
-#     veracodeAppProfile: 'Verademo'
-#     version: '$(build.buildNumber)'
-#     filepath: '$(System.DefaultWorkingDirectory)/app/target/verademo.war'
-#     sandboxName: 'Azure DevOps'
-#     createProfile: false
-#     apiId: '$(VERACODE_API_ID)'
-#     apiKey: '$(VERACODE_API_KEY)'
-#     failBuildOnPolicyFail: false
-#     failBuildIfUploadAndScanBuildStepFails: false
-#     importResults: false
-#     maximumWaitTime: '360'
-
 - script: |
     WRAPPER_VERSION=$(curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1)
     if wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar; 
@@ -49,10 +32,8 @@ steps:
         echo '[ERROR] DOWNLOAD FAILED'
         exit 1
     fi
-    pwd
   displayName: 'Download Veracode Java API Wrapper'
 
 - script: |
-    pwd
     java -jar VeracodeJavaAPI.jar -action UploadAndScan -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -deleteincompletescan 1 -createprofile false -appname "Verademo" -sandboxname "Azure DevOps" -version "$(build.buildNumber)" -filepath $(System.DefaultWorkingDirectory)/app/target/verademo.war
   displayName: 'Veracode Upload and Scan'
