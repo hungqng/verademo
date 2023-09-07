@@ -30,7 +30,7 @@ steps:
     veracodeAppProfile: 'Verademo'
     version: '$(build.buildNumber)'
     filepath: '$(System.DefaultWorkingDirectory)/app/target/verademo.war'
-    sandboxName: 'GitHub'
+    sandboxName: 'Azure DevOps'
     createProfile: false
     apiId: '$(VERACODE_API_ID)'
     apiKey: '$(VERACODE_API_KEY)'
