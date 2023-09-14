@@ -21,13 +21,12 @@ jobs:
       #   continue-on-error: true
       - name: pipeline-scan action step
         id: pipeline-scan
-        uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.3
+        uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-latest
           #julz0815/Veracode-pipeline-scan-action@beta-0.29
         with:
             vid: ${{ secrets.VERACODE_API_ID }}
             vkey: ${{ secrets.VERACODE_API_KEY }}
             file: "app/target/verademo.war" 
-            debug: 1
             fail_build: false
 
       - name: Upload results.json
