@@ -26,11 +26,7 @@ jobs:
         with:
             vid: ${{ secrets.VERACODE_API_ID }}
             vkey: ${{ secrets.VERACODE_API_KEY }}
-            file: "verademo.war" 
-            request_policy: "OWASP 10"
-            store_baseline_file: true
-            store_baseline_file_branch: "Feature-123"
-            create_baseline_from: "standard"
+            file: "app/target/verademo.war" 
             debug: 1
             fail_build: false
 
