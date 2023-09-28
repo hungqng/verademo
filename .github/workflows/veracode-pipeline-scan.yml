@@ -13,20 +13,20 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file app/pom.xml
           
-      - name: Pipeline Scan
-        run: |
-          curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-          unzip -o pipeline-scan-LATEST.zip
-          java -jar pipeline-scan.jar -vid ${{ secrets.VERACODE_API_ID }} -vkey ${{ secrets.VERACODE_API_KEY }} --json_output_file="results.json" -f app/target/verademo.war || true
-        continue-on-error: true
-      # - name: pipeline-scan action step
-      #   id: pipeline-scan
-      #   uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-latest
-      #   with:
-      #       vid: ${{ secrets.VERACODE_API_ID }}
-      #       vkey: ${{ secrets.VERACODE_API_KEY }}
-      #       file: "app/target/verademo.war" 
-      #       fail_build: false
+      # - name: Pipeline Scan
+      #   run: |
+      #     curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+      #     unzip -o pipeline-scan-LATEST.zip
+      #     java -jar pipeline-scan.jar -vid ${{ secrets.VERACODE_API_ID }} -vkey ${{ secrets.VERACODE_API_KEY }} --json_output_file="results.json" -f app/target/verademo.war || true
+      #   continue-on-error: true
+      - name: pipeline-scan action step
+        id: pipeline-scan
+        uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-latest
+        with:
+            vid: ${{ secrets.VERACODE_API_ID }}
+            vkey: ${{ secrets.VERACODE_API_KEY }}
+            file: "app/target/verademo.war" 
+            fail_build: false
 
       - name: Upload results.json
         uses: actions/upload-artifact@v2
