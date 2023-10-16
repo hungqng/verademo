@@ -131,7 +131,7 @@ pipeline {
                                             Set-ExecutionPolicy AllSigned -Scope Process -Force
                                             $ProgressPreference = "silentlyContinue"
                                             iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1'))
-                                            srcclr scan app/target
+                                            srcclr scan app
                                             '''
                             }
                         }
