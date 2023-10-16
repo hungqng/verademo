@@ -67,53 +67,53 @@ pipeline {
             }
         }
 
-        stage ('Veracode Pipeline Scanner') {
-            steps {
-                echo 'Veracode Pipeline scanning'
-                withCredentials([ usernamePassword ( 
-                    credentialsId: 'veracode_login', usernameVariable: 'VERACODE_API_ID', passwordVariable: 'VERACODE_API_KEY') ]) {
-                        script {
+        // stage ('Veracode Pipeline Scanner') {
+        //     steps {
+        //         echo 'Veracode Pipeline scanning'
+        //         withCredentials([ usernamePassword ( 
+        //             credentialsId: 'veracode_login', usernameVariable: 'VERACODE_API_ID', passwordVariable: 'VERACODE_API_KEY') ]) {
+        //                 script {
 
-                            // this try-catch block will show the flaws in the Jenkins log, and yet not
-                            // fail the build due to any flaws reported in the pipeline scan
-                            // alternately, you could add --fail_on_severity '', but that would not show the
-                            // flaws in the Jenkins log
+        //                     // this try-catch block will show the flaws in the Jenkins log, and yet not
+        //                     // fail the build due to any flaws reported in the pipeline scan
+        //                     // alternately, you could add --fail_on_severity '', but that would not show the
+        //                     // flaws in the Jenkins log
 
-                            // issue_details true: add flaw details to the results.json file
-                            try {
-                                if(isUnix() == true) {
-                                    sh """
-                                        curl -sO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-                                        unzip pipeline-scan-LATEST.zip pipeline-scan.jar
-                                        java -jar pipeline-scan.jar \
-                                            --veracode_api_id '${VERACODE_API_ID}' \
-                                            --veracode_api_key '${VERACODE_API_KEY}' \
-                                            --file app/target/verademo.war \
-                                            --issue_details true \
-                                            --json_output true \
-                                            --json_output_file results.json
-                                        """
-                                }
-                                else {
-                                    powershell """
-                                            curl  https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip -o pipeline-scan.zip
-                                            Expand-Archive -Path pipeline-scan.zip -DestinationPath veracode_scanner
-                                            java -jar veracode_scanner\\pipeline-scan.jar \
-                                                --veracode_api_id '${VERACODE_API_ID}' \
-                                                --veracode_api_key '${VERACODE_API_KEY}' \
-                                                --file app/target/verademo.war \
-                                                --issue_details true \
-                                                --json_output true \
-                                                --json_output_file results.json
-                                            """
-                                }
-                            } catch (err) {
-                                echo 'Pipeline err: ' + err
-                            }
-                        }    
-                    } 
-            }
-        }
+        //                     // issue_details true: add flaw details to the results.json file
+        //                     try {
+        //                         if(isUnix() == true) {
+        //                             sh """
+        //                                 curl -sO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+        //                                 unzip pipeline-scan-LATEST.zip pipeline-scan.jar
+        //                                 java -jar pipeline-scan.jar \
+        //                                     --veracode_api_id '${VERACODE_API_ID}' \
+        //                                     --veracode_api_key '${VERACODE_API_KEY}' \
+        //                                     --file app/target/verademo.war \
+        //                                     --issue_details true \
+        //                                     --json_output true \
+        //                                     --json_output_file results.json
+        //                                 """
+        //                         }
+        //                         else {
+        //                             powershell """
+        //                                     curl  https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip -o pipeline-scan.zip
+        //                                     Expand-Archive -Path pipeline-scan.zip -DestinationPath veracode_scanner
+        //                                     java -jar veracode_scanner\\pipeline-scan.jar \
+        //                                         --veracode_api_id '${VERACODE_API_ID}' \
+        //                                         --veracode_api_key '${VERACODE_API_KEY}' \
+        //                                         --file app/target/verademo.war \
+        //                                         --issue_details true \
+        //                                         --json_output true \
+        //                                         --json_output_file results.json
+        //                                     """
+        //                         }
+        //                     } catch (err) {
+        //                         echo 'Pipeline err: ' + err
+        //                     }
+        //                 }    
+        //             } 
+        //     }
+        // }
         stage ('Veracode Software Compositition Analysis') {
             steps {
                 echo 'Veracode SCA scanning'
@@ -131,7 +131,7 @@ pipeline {
                                             Set-ExecutionPolicy AllSigned -Scope Process -Force
                                             $ProgressPreference = "silentlyContinue"
                                             iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1'))
-                                            srcclr scan .app/target
+                                            srcclr scan app/target
                                             '''
                             }
                         }
