@@ -121,7 +121,7 @@ pipeline {
                     withMaven(maven:'maven-3') {
                         script {
                             if(isUnix() == true) {
-                                sh "curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ./app"
+                                sh "curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan .app/target/verademo.war"
 
                                 // debug, no upload
                                 //sh "curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh -s -- scan --no-upload"
@@ -131,7 +131,7 @@ pipeline {
                                             Set-ExecutionPolicy AllSigned -Scope Process -Force
                                             $ProgressPreference = "silentlyContinue"
                                             iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1'))
-                                            srcclr scan ./app
+                                            srcclr scan app/target/verademo.war
                                             '''
                             }
                         }
