@@ -1,5 +1,12 @@
 name: Veracode SCA Agent
-on: workflow_dispatch
+# Manual run
+# on: workflow_dispatch
+
+# Cron job schedule
+on:
+    schedule:
+    # Run at 12 AM every 1st day of the month
+    - cron: "0 0 1 * *"
     
 jobs:
   SCA:
