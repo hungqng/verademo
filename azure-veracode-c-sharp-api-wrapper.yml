@@ -26,8 +26,8 @@ steps:
   displayName: Veracode Static Analysis
   inputs:
     script: |
-      curl -O https://tools.veracode.com/integrations/API-Wrappers/CSharp/bin/VeracodeCSharpAPI.zip -d VeracodeCSharpAPI
+      curl -O https://tools.veracode.com/integrations/API-Wrappers/CSharp/bin/VeracodeCSharpAPI.zip
       unzip -q VeracodeCSharpAPI.zip
-      chmod +x $(System.DefaultWorkingDirectory)/VeracodeCSharpAPI/VeracodeCAPI.exe
+      chmod +x $(System.DefaultWorkingDirectory)/VeracodeCAPI.exe
       ls
-      $(System.DefaultWorkingDirectory)/VeracodeCSharpAPI/VeracodeC#API.exe -action UploadAndScan -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -createprofile false -appname "Verademo" -sandboxname "Azure DevOps" -version "$(build.buildNumber)" -filepath $(System.DefaultWorkingDirectory)/app/target/verademo.war
+      $(System.DefaultWorkingDirectory)/VeracodeC#API.exe -action UploadAndScan -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -createprofile false -appname "Verademo" -sandboxname "Azure DevOps" -version "$(build.buildNumber)" -filepath $(System.DefaultWorkingDirectory)/app/target/verademo.war
