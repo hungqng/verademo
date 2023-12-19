@@ -23,16 +23,21 @@ jobs:
       - name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@0.2.6
         with:
+          # Veracode application profile name
           appname: 'Verademo'
           createprofile: false
+          # Veracode application sandbox name
           sandboxname: 'GitHub'
           createsandbox: false
+          # Build artifact directory
           filepath: 'app/target/verademo.war'
-          # scan name
+          # Scan name
           version: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+          # API credentials
           vid: '${{ secrets.VERACODE_API_ID }}'
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           scantimeout: 60
+          # Optional arguments
           deleteincompletescan: 2
 #         debug: true
 #          exclude: '*.js'
