@@ -18,7 +18,7 @@ jobs:
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip -o pipeline-scan-LATEST.zip
           java -jar pipeline-scan.jar -vid ${{ secrets.VERACODE_API_ID }} -vkey ${{ secrets.VERACODE_API_KEY }} --fail_on_cwe=78 --json_output_file="results.json" -f app/target/verademo.war || true
-        continue-on-error: true
+      #  continue-on-error: true
       # - name: pipeline-scan action step
       #   id: pipeline-scan
       #   uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-latest
